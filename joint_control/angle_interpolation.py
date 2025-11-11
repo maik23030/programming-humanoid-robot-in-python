@@ -46,6 +46,17 @@ class AngleInterpolationAgent(PIDAgent):
         self.target_joints.update(target_joints)
         return super(AngleInterpolationAgent, self).think(perception)
 
+
+    def bezier_interp(self, t, p0, p1, p2, p3):
+        """Cubic Bezier interpolation."""
+        return (
+                (1 - t) ** 3 * p0
+                + 3 * (1 - t) ** 2 * t * p1
+                + 3 * (1 - t) * t ** 2 * p2
+                + t ** 3 * p3
+        )
+
+
     def angle_interpolation(self, keyframes, perception):
         target_joints = {}
         # YOUR CODE HERE
