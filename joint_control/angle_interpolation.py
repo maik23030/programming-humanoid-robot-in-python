@@ -34,7 +34,14 @@ class AngleInterpolationAgent(PIDAgent):
         self.keyframes = ([], [], [])
 
     def think(self, perception):
-        target_joints = self.angle_interpolation(self.keyframes, perception)
+
+        # initialize start time
+        if self.start_time is None:
+            self.start_time = perception.time
+
+        current_time = perception.time - self.start_time
+
+        target_joints = self.angle_interpolation(self.keyframes, current_time)
         target_joints['RHipYawPitch'] = target_joints['LHipYawPitch'] # copy missing joint in keyframes
         self.target_joints.update(target_joints)
         return super(AngleInterpolationAgent, self).think(perception)
