@@ -7,6 +7,10 @@
 
 
 from recognize_posture import PostureRecognitionAgent
+from keyframes.leftBackToStand import leftBackToStand
+from keyframes.leftBellyToStand import leftBellyToStand
+from keyframes.rightBackToStand import rightBackToStand
+from keyframes.rightBellyToStand import rightBellyToStand
 
 
 class StandingUpAgent(PostureRecognitionAgent):
@@ -17,6 +21,37 @@ class StandingUpAgent(PostureRecognitionAgent):
     def standing_up(self):
         posture = self.posture
         # YOUR CODE HERE
+
+        # Do nothing if standing
+        if posture in ["Stand", "StandInit"]:
+            return
+
+        # Choose the stand-up motion
+        if posture == "Left":
+            # Robot lying on its left side; need to check belly/back
+            # Use IMU angle to decide direction
+            if self.perception.imu[0] > 0:  # belly
+                self.keyframes = leftBellyToStand()
+            else:  # back
+                self.keyframes = leftBackToStand()
+
+        elif posture == "Right":
+            if self.perception.imu[0] > 0:  # belly
+                self.keyframes = rightBellyToStand()
+            else:
+                self.keyframes = rightBackToStand()
+
+        # Belly but centered → choose left version
+        elif posture == "Belly":
+            self.keyframes = leftBellyToStand()
+
+        # Back but centered → choose left version
+        elif posture == "Back":
+            self.keyframes = leftBackToStand()
+
+        # Unknown posture → do nothing
+        else:
+            pass
 
 
 class TestStandingUpAgent(StandingUpAgent):

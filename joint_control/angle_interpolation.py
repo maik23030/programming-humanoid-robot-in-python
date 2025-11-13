@@ -18,8 +18,7 @@
     # to the angle and time of the point. The first Bezier param describes the handle that controls the curve
     # preceding the point, the second describes the curve following the point.
 '''
-
-
+from joint_control.keyframes import wipe_forehead, leftBellyToStand
 from pid import PIDAgent
 from keyframes import hello
 
@@ -32,6 +31,7 @@ class AngleInterpolationAgent(PIDAgent):
                  sync_mode=True):
         super(AngleInterpolationAgent, self).__init__(simspark_ip, simspark_port, teamname, player_id, sync_mode)
         self.keyframes = ([], [], [])
+        self.start_time = None
 
     def think(self, perception):
 
@@ -42,7 +42,14 @@ class AngleInterpolationAgent(PIDAgent):
         current_time = perception.time - self.start_time
 
         target_joints = self.angle_interpolation(self.keyframes, current_time)
-        target_joints['RHipYawPitch'] = target_joints['LHipYawPitch'] # copy missing joint in keyframes
+
+        #target_joints['RHipYawPitch'] = target_joints['LHipYawPitch'] # copy missing joint in keyframes
+        if 'LHipYawPitch' in target_joints:
+            target_joints['RHipYawPitch'] = target_joints['LHipYawPitch']
+        else:
+            target_joints['RHipYawPitch'] = 0.0
+
+
         self.target_joints.update(target_joints)
         return super(AngleInterpolationAgent, self).think(perception)
 
@@ -57,13 +64,59 @@ class AngleInterpolationAgent(PIDAgent):
         )
 
 
-    def angle_interpolation(self, keyframes, perception):
+    def angle_interpolation(self, keyframes, current_time):
         target_joints = {}
         # YOUR CODE HERE
+
+        names, times, keys = keyframes
+
+        if not names:
+            return {}
+
+
+        target_joints = {}
+
+        for i, name in enumerate(names):
+            joint_times = times[i]
+            joint_keys = keys[i]
+
+            # find segment containing current_time
+            if current_time <= joint_times[0]:
+                target_joints[name] = joint_keys[0][0]
+                continue
+            if current_time >= joint_times[-1]:
+                target_joints[name] = joint_keys[-1][0]
+                continue
+
+            # find keyframe interval
+            for j in range(1, len(joint_times)):
+                if joint_times[j] >= current_time:
+                    t0 = joint_times[j - 1]
+                    t1 = joint_times[j]
+                    key0 = joint_keys[j - 1]
+                    key1 = joint_keys[j]
+
+                    angle0 = key0[0]
+                    angle1 = key1[0]
+
+                    # handle data: [int type, float dTime, float dAngle]
+                    handle_out = key0[2]  # handle after current point
+                    handle_in = key1[1]  # handle before next point
+
+                    # compute control points
+                    p0 = angle0
+                    p1 = angle0 + handle_out[2]  # outgoing handle
+                    p2 = angle1 + handle_in[2]  # incoming handle
+                    p3 = angle1
+
+                    # normalize local time (0–1)
+                    t_norm = (current_time - t0) / (t1 - t0)
+                    target_joints[name] = self.bezier_interp(t_norm, p0, p1, p2, p3)
+                    break
 
         return target_joints
 
 if __name__ == '__main__':
     agent = AngleInterpolationAgent()
-    agent.keyframes = hello()  # CHANGE DIFFERENT KEYFRAMES
+    agent.keyframes = wipe_forehead(motion=None)  # CHANGE DIFFERENT KEYFRAMES
     agent.run()

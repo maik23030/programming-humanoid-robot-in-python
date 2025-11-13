@@ -33,11 +33,11 @@ class PIDController(object):
         self.u = np.zeros(size)
         self.e1 = np.zeros(size)
         self.e2 = np.zeros(size)
-        # ADJUST PARAMETERS BELOW
+        # ADJUST PARAMETERS BELOW TEST
         delay = 0
-        self.Kp = 0
-        self.Ki = 0
-        self.Kd = 0
+        self.Kp = 1
+        self.Ki = 1
+        self.Kd = 1
         self.y = deque(np.zeros(size), maxlen=delay + 1)
 
     def set_delay(self, delay):
@@ -53,6 +53,26 @@ class PIDController(object):
         @return control signal
         '''
         # YOUR CODE HERE
+
+        prev_pred = self.y[-1]
+
+        #prediction step
+        # angel (t) = angel(t-1) + u(t-1) * dt
+        pred = prev_pred + self.u * self.dt
+
+        #current error compute
+        e = target - prev_pred
+
+        de = e - self.e1
+        ie = e - self.e2
+
+        self.u = (self.Kp * e) + (self.Ki * ie * self.dt) + (self.Kd * de / self.dt)
+
+        #update History
+        self.e2 = np.copy(self.e1)
+        self.e1 = np.copy(e)
+
+        self.y[-1] = prev_pred
 
         return self.u
 
