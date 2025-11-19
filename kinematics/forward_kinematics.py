@@ -167,6 +167,51 @@ class ForwardKinematicsAgent(PostureRecognitionAgent):
 
             T = T_trans * T_rot
 
+        elif joint_name == "RShoulderPitch":
+            Tx = 0.0
+            Ty = -0.098  # right arm offset is mirrored in Y
+            Tz = 0.100
+
+            T_trans = matrix([[1, 0, 0, Tx],
+                              [0, 1, 0, Ty],
+                              [0, 0, 1, Tz],
+                              [0, 0, 0, 1]])
+
+            T_rot = rot_y(joint_angle)
+            T = T_trans * T_rot
+
+        elif joint_name == "RShoulderRoll":
+            T = rot_x(joint_angle)
+
+        elif joint_name == "RElbowYaw":
+            Tx = 0.105
+            Ty = 0.0
+            Tz = 0.0
+
+            T_trans = matrix([[1, 0, 0, Tx],
+                              [0, 1, 0, Ty],
+                              [0, 0, 1, Tz],
+                              [0, 0, 0, 1]])
+
+            T_rot = rot_z(joint_angle)
+            T = T_trans * T_rot
+
+        elif joint_name == "RElbowRoll":
+            T = rot_x(joint_angle)
+
+        elif joint_name == "RWristYaw":
+            Tx = 0.056
+            Ty = 0.0
+            Tz = 0.0
+
+            T_trans = matrix([[1, 0, 0, Tx],
+                              [0, 1, 0, Ty],
+                              [0, 0, 1, Tz],
+                              [0, 0, 0, 1]])
+
+            T_rot = rot_z(joint_angle)
+            T = T_trans * T_rot
+
         return T
 
     def forward_kinematics(self, joints):
