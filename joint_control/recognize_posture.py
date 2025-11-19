@@ -25,7 +25,9 @@ class PostureRecognitionAgent(AngleInterpolationAgent):
         super(PostureRecognitionAgent, self).__init__(simspark_ip, simspark_port, teamname, player_id, sync_mode)
         self.posture = 'unknown'
 
-        self.posture_classifier = pickle.load(open('robot_pose.pkl', 'rb'))  # LOAD YOUR CLASSIFIER
+        this_dir = os.path.dirname(os.path.abspath(__file__))
+        pose_path = os.path.join(this_dir, "robot_pose.pkl")
+        self.posture_classifier = pickle.load(open(pose_path, 'rb'))  # LOAD YOUR CLASSIFIER
 
         self.classes = sorted(os.listdir('robot_pose_data_json'))
 
