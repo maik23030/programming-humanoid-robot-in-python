@@ -23,7 +23,28 @@ sys.path.append(os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', '
 
 from numpy.matlib import matrix, identity
 
-from recognize_posture import PostureRecognitionAgent
+from joint_control.recognize_posture import  PostureRecognitionAgent
+
+
+def rot_x(theta):
+    return matrix([[1, 0, 0, 0],
+                   [0, np.cos(theta), -np.sin(theta), 0],
+                   [0, np.sin(theta), np.cos(theta), 0],
+                   [0, 0, 0, 1]])
+
+
+def rot_y(theta):
+    return matrix([[np.cos(theta), 0, np.sin(theta), 0],
+                   [0, 1, 0, 0],
+                   [-np.sin(theta), 0, np.cos(theta), 0],
+                   [0, 0, 0, 1]])
+
+
+def rot_z(theta):
+    return matrix([[np.cos(theta), -np.sin(theta), 0, 0],
+                   [np.sin(theta), np.cos(theta), 0, 0],
+                   [0, 0, 1, 0],
+                   [0, 0, 0, 1]])
 
 
 class ForwardKinematicsAgent(PostureRecognitionAgent):
