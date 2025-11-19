@@ -46,6 +46,24 @@ def rot_z(theta):
                    [0, 0, 1, 0],
                    [0, 0, 0, 1]])
 
+def rot_axis(axis, theta):
+    """Rotation around an arbitrary axis (unit vector) by angle theta."""
+    ax = np.asarray(axis, dtype=float)
+    ax = ax / np.linalg.norm(ax)
+    ux, uy, uz = ax
+    c = np.cos(theta)
+    s = np.sin(theta)
+    one_c = 1.0 - c
+
+    # 3x3 rotation from axis-angle formula
+    R = matrix([
+        [ux*ux*one_c + c,     ux*uy*one_c - uz*s, ux*uz*one_c + uy*s, 0],
+        [uy*ux*one_c + uz*s,  uy*uy*one_c + c,    uy*uz*one_c - ux*s, 0],
+        [uz*ux*one_c - uy*s,  uz*uy*one_c + ux*s, uz*uz*one_c + c,    0],
+        [0, 0, 0, 1]
+    ])
+    return R
+
 
 class ForwardKinematicsAgent(PostureRecognitionAgent):
     def __init__(self, simspark_ip='localhost',
