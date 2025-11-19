@@ -230,6 +230,67 @@ class ForwardKinematicsAgent(PostureRecognitionAgent):
             T_rot = rot_z(joint_angle)
             T = T_trans * T_rot
 
+        # === LEFT LEG ===
+        elif joint_name == "LHipYawPitch":
+            # Torso → LHipYawPitch
+            Tx = 0.0
+            Ty = 0.050  # 50 mm
+            Tz = -0.085  # -85 mm
+
+            T_trans = matrix([[1, 0, 0, Tx],
+                              [0, 1, 0, Ty],
+                              [0, 0, 1, Tz],
+                              [0, 0, 0, 1]])
+
+            # Axis at 45° between +Y and +Z
+            axis = [0.0, 1.0 / np.sqrt(2.0), 1.0 / np.sqrt(2.0)]
+            T_rot = rot_axis(axis, joint_angle)
+
+            T = T_trans * T_rot
+
+        elif joint_name == "LHipRoll":
+            # LHipYawPitch → LHipRoll (no translation)
+            # roll around X
+            T = rot_x(joint_angle)
+
+        elif joint_name == "LHipPitch":
+            # LHipRoll → LHipPitch (no translation)
+            # pitch around Y
+            T = rot_y(joint_angle)
+
+        elif joint_name == "LKneePitch":
+            # LHipPitch → LKneePitch
+            Tx = 0.0
+            Ty = 0.0
+            Tz = -0.100  # -100 mm, thigh length
+
+            T_trans = matrix([[1, 0, 0, Tx],
+                              [0, 1, 0, Ty],
+                              [0, 0, 1, Tz],
+                              [0, 0, 0, 1]])
+
+            T_rot = rot_y(joint_angle)
+            T = T_trans * T_rot
+
+        elif joint_name == "LAnklePitch":
+            # LKneePitch → LAnklePitch
+            Tx = 0.0
+            Ty = 0.0
+            Tz = -0.1029  # -102.9 mm, tibia length
+
+            T_trans = matrix([[1, 0, 0, Tx],
+                              [0, 1, 0, Ty],
+                              [0, 0, 1, Tz],
+                              [0, 0, 0, 1]])
+
+            T_rot = rot_y(joint_angle)
+            T = T_trans * T_rot
+
+        elif joint_name == "LAnkleRoll":
+            # LAnklePitch → LAnkleRoll (no translation)
+            # roll around X
+            T = rot_x(joint_angle)
+
         return T
 
     def forward_kinematics(self, joints):
