@@ -88,6 +88,27 @@ class ForwardKinematicsAgent(PostureRecognitionAgent):
         T = identity(4)
         # YOUR CODE HERE
 
+        if joint_name == "HeadYaw":
+            # neck offset (torso → neck)
+            Tx = 0
+            Ty = 0
+            Tz = 0.1265  # meters
+
+            # translation matrix
+            T_trans = matrix([[1, 0, 0, Tx],
+                              [0, 1, 0, Ty],
+                              [0, 0, 1, Tz],
+                              [0, 0, 0, 1]])
+
+            # rotation around z-axis
+            T_rot = self.rot_z(joint_angle)
+
+            T = T_trans * T_rot
+
+            # 2. HeadPitch: rotation around y-axis, no translation
+        elif joint_name == "HeadPitch":
+            T = self.rot_y(joint_angle)
+
         return T
 
     def forward_kinematics(self, joints):
