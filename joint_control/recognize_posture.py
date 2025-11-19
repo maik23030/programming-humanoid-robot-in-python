@@ -29,7 +29,9 @@ class PostureRecognitionAgent(AngleInterpolationAgent):
         pose_path = os.path.join(this_dir, "robot_pose.pkl")
         self.posture_classifier = pickle.load(open(pose_path, 'rb'))  # LOAD YOUR CLASSIFIER
 
-        self.classes = sorted(os.listdir('robot_pose_data_json'))
+        this_dir = os.path.dirname(os.path.abspath(__file__))
+        data_dir = os.path.join(this_dir, "robot_pose_data_json")
+        self.classes = sorted(os.listdir(data_dir))
 
 
     def think(self, perception):
