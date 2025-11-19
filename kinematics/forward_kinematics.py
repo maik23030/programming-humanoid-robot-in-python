@@ -291,6 +291,62 @@ class ForwardKinematicsAgent(PostureRecognitionAgent):
             # roll around X
             T = rot_x(joint_angle)
 
+        # === RIGHT LEG ===
+        elif joint_name == "RHipYawPitch":
+            # Torso → RHipYawPitch
+            Tx = 0.0
+            Ty = -0.050  # mirror of left (+0.050 → -0.050)
+            Tz = -0.085
+
+            T_trans = matrix([[1, 0, 0, Tx],
+                              [0, 1, 0, Ty],
+                              [0, 0, 1, Tz],
+                              [0, 0, 0, 1]])
+
+            # Mirrored axis for right side
+            axis = [0.0, -1.0 / np.sqrt(2.0), 1.0 / np.sqrt(2.0)]
+            T_rot = rot_axis(axis, joint_angle)
+
+            T = T_trans * T_rot
+
+        elif joint_name == "RHipRoll":
+            # roll around X (same as left)
+            T = rot_x(joint_angle)
+
+        elif joint_name == "RHipPitch":
+            # pitch around Y (same as left)
+            T = rot_y(joint_angle)
+
+        elif joint_name == "RKneePitch":
+            # Same translation as left knee
+            Tx = 0.0
+            Ty = 0.0
+            Tz = -0.100
+
+            T_trans = matrix([[1, 0, 0, Tx],
+                              [0, 1, 0, Ty],
+                              [0, 0, 1, Tz],
+                              [0, 0, 0, 1]])
+
+            T_rot = rot_y(joint_angle)
+            T = T_trans * T_rot
+
+        elif joint_name == "RAnklePitch":
+            Tx = 0.0
+            Ty = 0.0
+            Tz = -0.1029
+
+            T_trans = matrix([[1, 0, 0, Tx],
+                              [0, 1, 0, Ty],
+                              [0, 0, 1, Tz],
+                              [0, 0, 0, 1]])
+
+            T_rot = rot_y(joint_angle)
+            T = T_trans * T_rot
+
+        elif joint_name == "RAnkleRoll":
+            T = rot_x(joint_angle)
+
         return T
 
     def forward_kinematics(self, joints):
