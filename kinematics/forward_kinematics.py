@@ -38,6 +38,18 @@ class ForwardKinematicsAgent(PostureRecognitionAgent):
         # chains defines the name of chain and joints of the chain
         self.chains = {'Head': ['HeadYaw', 'HeadPitch']
                        # YOUR CODE HERE
+
+                       'LArm': ['LShoulderPitch', 'LShoulderRoll',
+                                'LElbowYaw', 'LElbowRoll', 'LWristYaw'],
+
+                       'RArm': ['RShoulderPitch', 'RShoulderRoll',
+                                'RElbowYaw', 'RElbowRoll', 'RWristYaw'],
+
+                       'LLeg': ['LHipYawPitch', 'LHipRoll', 'LHipPitch',
+                                'LKneePitch', 'LAnklePitch', 'LAnkleRoll'],
+
+                       'RLeg': ['RHipYawPitch', 'RHipRoll', 'RHipPitch',
+                                'RKneePitch', 'RAnklePitch', 'RAnkleRoll'],
                        }
 
     def think(self, perception):
