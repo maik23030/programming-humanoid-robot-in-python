@@ -109,6 +109,64 @@ class ForwardKinematicsAgent(PostureRecognitionAgent):
         elif joint_name == "HeadPitch":
             T = self.rot_y(joint_angle)
 
+        elif joint_name == "LShoulderPitch":
+            # translation from torso -> shoulder
+            Tx = 0.0
+            Ty = +0.098  # left arm Y offset
+            Tz = +0.100  # shoulder height
+
+            T_trans = matrix([[1, 0, 0, Tx],
+                              [0, 1, 0, Ty],
+                              [0, 0, 1, Tz],
+                              [0, 0, 0, 1]])
+
+            # rotation around Y-axis
+            T_rot = rot_y(joint_angle)
+
+            T = T_trans * T_rot
+
+        elif joint_name == "LShoulderRoll":
+            # no translation between shoulder pitch and roll
+            # rotation around X
+            T = rot_x(joint_angle)
+
+        elif joint_name == "LElbowYaw":
+            # translation from shoulder roll -> elbow yaw
+            Tx = 0.105  # upper arm length in meters
+            Ty = 0.0
+            Tz = 0.0
+
+            T_trans = matrix([[1, 0, 0, Tx],
+                              [0, 1, 0, Ty],
+                              [0, 0, 1, Tz],
+                              [0, 0, 0, 1]])
+
+            # rotation around Z-axis
+            T_rot = rot_z(joint_angle)
+
+            T = T_trans * T_rot
+
+        elif joint_name == "LElbowRoll":
+            # rotation around X-axis
+            # no translation
+            T = rot_x(joint_angle)
+
+        elif joint_name == "LWristYaw":
+            # translation from elbow roll → wrist yaw
+            Tx = 0.056  # forearm length in meters
+            Ty = 0.0
+            Tz = 0.0
+
+            T_trans = matrix([[1, 0, 0, Tx],
+                              [0, 1, 0, Ty],
+                              [0, 0, 1, Tz],
+                              [0, 0, 0, 1]])
+
+            # wrist yaw rotates around the Z-axis
+            T_rot = rot_z(joint_angle)
+
+            T = T_trans * T_rot
+
         return T
 
     def forward_kinematics(self, joints):
