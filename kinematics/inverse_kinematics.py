@@ -30,7 +30,8 @@ class InverseKinematicsAgent(ForwardKinematicsAgent):
                                 'RKneePitch', 'RAnklePitch', 'RAnkleRoll'],
                        }
 
-    def inverse_kinematics(self, effector_name, transform):
+    def inverse_kinematics(self, effector_name, target_T,
+                           max_iters=60, epsilon=1e-4, step_size=0.5):
         '''solve the inverse kinematics
 
         :param str effector_name: name of end effector, e.g. LLeg, RLeg
