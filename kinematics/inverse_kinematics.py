@@ -80,6 +80,53 @@ class InverseKinematicsAgent(ForwardKinematicsAgent):
 
         return joint_angles
 
+    def _numeric_jacobian(self, effector_name, joint_names, q, h=1e-5):
+        dof = len(joint_names)
+        J = np.zeros((6, dof))
+
+        base_T = self._fk_from_angles(effector_name, joint_names, q)
+
+        for i in range(dof):
+            dq = np.zeros_like(q)
+            dq[i] = h
+
+            T2 = self._fk_from_angles(effector_name, joint_names, q + dq)
+
+            # position derivative
+            dp = (T2[:3, 3] - base_T[:3, 3]) / h
+
+            # rotation derivative
+            dR = T2[:3, :3] @ base_T[:3, :3].T
+            dω = self._rotation_matrix_to_vector(dR) / h
+
+            J[:, i] = np.hstack([dp, dω])
+
+        return J
+
+    def _rotation_matrix_to_vector(self, R):
+        angle = np.arccos(max(min((np.trace(R) - 1) / 2, 1.0), -1.0))
+        if abs(angle) < 1e-6:
+            return np.zeros(3)
+
+        axis = np.array([
+            R[2, 1] - R[1, 2],
+            R[0, 2] - R[2, 0],
+            R[1, 0] - R[0, 1]
+        ]) / (2 * np.sin(angle))
+
+        return axis * angle
+
+    def _fk_from_angles(self, effector_name, joint_names, q):
+        """Temporarily inject q into joint_positions to compute FK."""
+        saved = self.joint_positions.copy()
+
+        for name, angle in zip(joint_names, q):
+            self.joint_positions[name] = angle
+
+        T = self.get_transform(effector_name)
+        self.joint_positions = saved
+        return T
+
     def set_transforms(self, effector_name, transform):
         '''solve the inverse kinematics and control joints use the results
         '''
