@@ -9,7 +9,7 @@
        and test your inverse kinematics implementation.
 '''
 
-
+import numpy as np
 from forward_kinematics import ForwardKinematicsAgent
 from numpy.matlib import identity
 
