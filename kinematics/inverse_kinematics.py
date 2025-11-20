@@ -40,6 +40,44 @@ class InverseKinematicsAgent(ForwardKinematicsAgent):
         '''
         joint_angles = []
         # YOUR CODE HERE
+
+        joint_names = self.chains[effector_name]  # <-- automatically get FK chain
+        dof = len(joint_names)
+
+        # initial guess = current joint positions
+        q = np.array([self.joint_positions[j] for j in joint_names], dtype=float)
+
+        for _ in range(max_iters):
+
+            # Forward kinematics at current joint angles
+            T = self._fk_from_angles(effector_name, joint_names, q)
+
+            # Position error
+            pos_err = target_T[:3, 3] - T[:3, 3]
+
+            # Rotation error via rotation vector
+            R_err = target_T[:3, :3] @ T[:3, :3].T
+            rot_err = self._rotation_matrix_to_vector(R_err)
+
+            # Full 6×1 error vector
+            err = np.hstack([pos_err, rot_err])
+
+            # Convergence
+            if np.linalg.norm(err) < epsilon:
+                break
+
+            # Jacobian (6×dof)
+            J = self._numeric_jacobian(effector_name, joint_names, q)
+
+            # Damped least-squares inverse
+            λ = 0.1
+            J_pinv = J.T @ np.linalg.inv(J @ J.T + λ * np.eye(6))
+
+            # Update
+            q += step_size * (J_pinv @ err)
+
+        joint_angles = q.tolist()
+
         return joint_angles
 
     def set_transforms(self, effector_name, transform):
