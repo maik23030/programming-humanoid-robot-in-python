@@ -131,7 +131,12 @@ class InverseKinematicsAgent(ForwardKinematicsAgent):
         '''solve the inverse kinematics and control joints use the results
         '''
         # YOUR CODE HERE
-        self.keyframes = ([], [], [])  # the result joint angles have to fill in
+        joint_names = self.chains[effector_name]
+
+        q = self.inverse_kinematics(effector_name, transform)
+
+        times = [0.5] * len(q)
+        self.keyframes = (joint_names, times, q) # the result joint angles have to fill in
 
 if __name__ == '__main__':
     agent = InverseKinematicsAgent()
