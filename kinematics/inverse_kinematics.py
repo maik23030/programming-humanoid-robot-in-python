@@ -15,6 +15,21 @@ from numpy.matlib import identity
 
 
 class InverseKinematicsAgent(ForwardKinematicsAgent):
+    def __init__(self):
+        super(ForwardKinematicsAgent, self).__init__()
+
+        #From FK
+        self.chains = {'Head': ['HeadYaw', 'HeadPitch'],
+                       'LArm': ['LShoulderPitch', 'LShoulderRoll',
+                                'LElbowYaw', 'LElbowRoll', 'LWristYaw'],
+                       'RArm': ['RShoulderPitch', 'RShoulderRoll',
+                                'RElbowYaw', 'RElbowRoll', 'RWristYaw'],
+                       'LLeg': ['LHipYawPitch', 'LHipRoll', 'LHipPitch',
+                                'LKneePitch', 'LAnklePitch', 'LAnkleRoll'],
+                       'RLeg': ['RHipYawPitch', 'RHipRoll', 'RHipPitch',
+                                'RKneePitch', 'RAnklePitch', 'RAnkleRoll'],
+                       }
+
     def inverse_kinematics(self, effector_name, transform):
         '''solve the inverse kinematics
 
