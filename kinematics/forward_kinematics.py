@@ -15,15 +15,16 @@
     1. the local_trans has to consider different joint axes and link parameters for different joints
     2. Please use radians and meters as unit.
 '''
-
 # add PYTHONPATH
 import os
 import sys
+import numpy as np
+
 sys.path.append(os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', 'joint_control'))
 
 from numpy.matlib import matrix, identity
 
-from joint_control.recognize_posture import  PostureRecognitionAgent
+from recognize_posture import  PostureRecognitionAgent
 
 
 def rot_x(theta):
@@ -75,7 +76,7 @@ class ForwardKinematicsAgent(PostureRecognitionAgent):
         self.transforms = {n: identity(4) for n in self.joint_names}
 
         # chains defines the name of chain and joints of the chain
-        self.chains = {'Head': ['HeadYaw', 'HeadPitch']
+        self.chains = {'Head': ['HeadYaw', 'HeadPitch'],
                        # YOUR CODE HERE
 
                        'LArm': ['LShoulderPitch', 'LShoulderRoll',
@@ -94,6 +95,7 @@ class ForwardKinematicsAgent(PostureRecognitionAgent):
     def think(self, perception):
         self.forward_kinematics(perception.joint)
         return super(ForwardKinematicsAgent, self).think(perception)
+
 
     def local_trans(self, joint_name, joint_angle):
         '''calculate local transformation of one joint
@@ -119,14 +121,15 @@ class ForwardKinematicsAgent(PostureRecognitionAgent):
                               [0, 0, 0, 1]])
 
             # rotation around z-axis
-            T_rot = self.rot_z(joint_angle)
+            T_rot = rot_z(joint_angle)
 
             T = T_trans * T_rot
 
             # 2. HeadPitch: rotation around y-axis, no translation
         elif joint_name == "HeadPitch":
-            T = self.rot_y(joint_angle)
+            T = rot_y(joint_angle)
 
+        # === LEFT ARM ===
         elif joint_name == "LShoulderPitch":
             # translation from torso -> shoulder
             Tx = 0.0
@@ -185,6 +188,7 @@ class ForwardKinematicsAgent(PostureRecognitionAgent):
 
             T = T_trans * T_rot
 
+        # === RIGHT ARM ===
         elif joint_name == "RShoulderPitch":
             Tx = 0.0
             Ty = -0.098  # right arm offset is mirrored in Y

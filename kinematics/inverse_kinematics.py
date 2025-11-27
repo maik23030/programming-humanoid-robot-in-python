@@ -116,15 +116,25 @@ class InverseKinematicsAgent(ForwardKinematicsAgent):
         return axis * angle
 
     def _fk_from_angles(self, effector_name, joint_names, q):
-        """Temporarily inject q into joint_positions to compute FK."""
+        """Compute effector transform for a given joint vector q using FK."""
+        # Save current joint positions
         saved = self.joint_positions.copy()
 
+        # Inject q into joint_positions
         for name, angle in zip(joint_names, q):
-            self.joint_positions[name] = angle
+            self.joint_positions[name] = float(angle)
 
+        # Recompute FK with these joint positions
+        self.forward_kinematics(self.joint_positions)
+
+        # Query the effector transform
         T = self.get_transform(effector_name)
+
+        # Restore original joint positions & FK (optional but cleaner)
         self.joint_positions = saved
-        return T
+        self.forward_kinematics(self.joint_positions)
+
+        return np.array(T)
 
     def set_transforms(self, effector_name, transform):
         '''solve the inverse kinematics and control joints use the results
