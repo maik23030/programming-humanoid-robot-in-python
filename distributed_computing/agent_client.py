@@ -83,6 +83,7 @@ class ClientAgent(object):
         '''get transform with given name
         '''
         # YOUR CODE HERE
+        return self.rpc.get_transform(name)
 
     def set_transform(self, effector_name, transform):
         '''solve the inverse kinematics and control joints use the results
