@@ -42,6 +42,13 @@ class ServerAgent(InverseKinematicsAgent):
         e.g. return until keyframes are executed
         '''
         # YOUR CODE HERE
+        self.keyframes = keyframes
+
+        # BLOCK until keyframes are finished
+        while self.keyframes is not None:
+            self.step()  # one simulation/control loop step
+
+        return True
 
     def get_transform(self, name):
         '''get transform with given name
