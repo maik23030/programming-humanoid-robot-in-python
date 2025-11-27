@@ -65,6 +65,7 @@ class ClientAgent(object):
         '''set target angle of joint for PID controller
         '''
         # YOUR CODE HERE
+        return self.rpc.set_angle(joint_name, angle)
 
     def get_posture(self):
         '''return current posture of robot'''
