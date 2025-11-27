@@ -18,6 +18,16 @@ class PostHandler(object):
     def execute_keyframes(self, keyframes):
         '''non-blocking call of ClientAgent.execute_keyframes'''
         # YOUR CODE HERE
+        def worker():
+            try:
+                self.proxy.execute_keyframes(keyframes)
+            except ReferenceError:
+                pass  # ClientAgent was deleted
+
+        t = threading.Thread(target=worker)
+        t.daemon = True  # does not block program exit
+        t.start()
+        return t
 
     def set_transform(self, effector_name, transform):
         '''non-blocking call of ClientAgent.set_transform'''
