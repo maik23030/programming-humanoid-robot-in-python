@@ -361,6 +361,8 @@ class ForwardKinematicsAgent(PostureRecognitionAgent):
                 Tl = self.local_trans(joint, angle)
                 # YOUR CODE HERE
 
+                T = T @ Tl
+
                 self.transforms[joint] = T
 
 if __name__ == '__main__':
