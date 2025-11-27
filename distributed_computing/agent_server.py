@@ -32,6 +32,12 @@ class ServerAgent(InverseKinematicsAgent):
         '''set target angle of joint for PID controller
         '''
         # YOUR CODE HERE
+        joint_names = [joint_name]
+        times = [0.5]  # execute over 0.5 seconds
+        angles = [float(angle)]
+
+        self.keyframes = (joint_names, times, angles)
+        return True
 
     def get_posture(self):
         '''return current posture of robot'''
