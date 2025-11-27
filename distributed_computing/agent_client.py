@@ -77,6 +77,7 @@ class ClientAgent(object):
         e.g. return until keyframes are executed
         '''
         # YOUR CODE HERE
+        return self.rpc.execute_keyframes(keyframes)
 
     def get_transform(self, name):
         '''get transform with given name
