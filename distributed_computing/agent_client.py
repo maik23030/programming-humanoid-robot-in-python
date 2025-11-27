@@ -50,7 +50,12 @@ class ClientAgent(object):
     # YOUR CODE HERE
     def __init__(self,host="localhost", port=9000):
         self.post = PostHandler(self)
-    
+        url = "http://{}:{}".format(host, port)
+        self.rpc = xmlrpc.client.ServerProxy(url, allow_none=True)
+
+        # Provide non-blocking .post interface
+        self.post = PostHandler(self)
+
     def get_angle(self, joint_name):
         '''get sensor value of given joint'''
         # YOUR CODE HERE
