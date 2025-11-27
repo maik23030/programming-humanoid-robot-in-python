@@ -47,6 +47,15 @@ class ServerAgent(InverseKinematicsAgent):
         '''get transform with given name
         '''
         # YOUR CODE HERE
+        # Ensure FK is up to date
+        self.forward_kinematics(self.joint_positions)
+
+        T = self.transforms.get(name, None)
+        if T is None:
+            return None
+
+        # Convert matrix to list-of-lists for RPC serialization
+        return T.tolist()
 
     def set_transform(self, effector_name, transform):
         '''solve the inverse kinematics and control joints use the results
