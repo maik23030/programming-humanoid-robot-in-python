@@ -32,6 +32,16 @@ class PostHandler(object):
     def set_transform(self, effector_name, transform):
         '''non-blocking call of ClientAgent.set_transform'''
         # YOUR CODE HERE
+        def worker():
+            try:
+                self.proxy.set_transform(effector_name, transform)
+            except ReferenceError:
+                pass
+
+        t = threading.Thread(target=worker)
+        t.daemon = True
+        t.start()
+        return t
 
 
 class ClientAgent(object):
