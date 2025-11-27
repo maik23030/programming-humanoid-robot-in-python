@@ -89,6 +89,8 @@ class ClientAgent(object):
         '''solve the inverse kinematics and control joints use the results
         '''
         # YOUR CODE HERE
+        return self.rpc.set_transform(effector_name, transform)
+
 
 if __name__ == '__main__':
     agent = ClientAgent()
