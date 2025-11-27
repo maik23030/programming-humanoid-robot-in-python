@@ -27,6 +27,7 @@ class ServerAgent(InverseKinematicsAgent):
     def get_angle(self, joint_name):
         '''get sensor value of given joint'''
         # YOUR CODE HERE
+        return float(self.joint_positions.get(joint_name, 0.0))
     
     def set_angle(self, joint_name, angle):
         '''set target angle of joint for PID controller
