@@ -52,6 +52,20 @@ class ServerAgent(InverseKinematicsAgent):
         '''solve the inverse kinematics and control joints use the results
         '''
         # YOUR CODE HERE
+        # Convert transform to numpy array
+        import numpy as np
+        target_T = np.array(transform, dtype=float)
+
+        # Compute IK
+        q = self.inverse_kinematics(effector_name, target_T)
+
+        joint_names = self.chains[effector_name]
+        times = [0.5] * len(q)
+
+        # Create blocking keyframe command
+        self.keyframes = (joint_names, times, q)
+
+        return True
 
 if __name__ == '__main__':
     agent = ServerAgent()
