@@ -48,7 +48,7 @@ class ClientAgent(object):
     '''ClientAgent request RPC service from remote server
     '''
     # YOUR CODE HERE
-    def __init__(self):
+    def __init__(self,host="localhost", port=9000):
         self.post = PostHandler(self)
     
     def get_angle(self, joint_name):
